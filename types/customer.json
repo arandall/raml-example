@@ -1,0 +1,26 @@
+ {
+  "$schema": "http://json-schema.org/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "lastUpdated": {
+      "type": "date-time"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "lastName",
+    "address"
+  ]
+}

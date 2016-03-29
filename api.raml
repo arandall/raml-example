@@ -1,0 +1,99 @@
+#%RAML 0.8
+title: customer
+version: v1
+protocols: [ HTTPS ]
+baseUri: https://examples.allanrandall.com/simple-rest/api/{version}
+mediaType: application/json
+securedBy: [ basicAuth ]
+securitySchemes:
+  - basicAuth:
+      description: Each request must contain the headers necessary for
+                   basic authentication
+      type: Basic Authentication
+      describedBy:
+        headers:
+          Authorization:
+            description: Used to send the Base64 encoded "username:password"
+                         credentials
+            type: string
+        responses:
+          401:
+            description: |
+              Unauthorized. Either the provided username and password
+              combination is invalid, or the user is not allowed to access
+              the content provided by the requested URL.
+schemas:
+  - Customer: !include types/customer.json
+traits:
+  - pageable:
+      queryParameters:
+        offset:
+          description: Skip over a number of elements by specifying an offset value for the query
+          type: integer
+          required: false
+          example: 20
+          default: 0
+        limit:
+          description: Limit the number of elements on the response
+          type: integer
+          required: false
+          example: 80
+          default: 10
+/customers:
+  get:
+    description: List all Customers matching query criteria, if provided;
+                 otherwise list all Customers
+    is: [ pageable ]
+    queryParameters:
+      startLastUpdated: 
+        displayName: Start from Last Updated
+        type: string
+        description: Start from customers where last update field is >= date
+        example: 2016-03-28T07:01:19Z
+        required: false
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/customers.json
+  post:
+    description: Create a new Customer
+    body:
+      application/json:
+        schema: Customer
+        example: !include examples/customer.json
+    responses:
+      201:
+        description: HTTP Header Locataion to contain the location to the resource
+  /{id}:
+    get:
+      description: Get a Customer by id
+      responses:
+        200:
+          body:
+            application/json:
+              schema: Customer
+              example: !include examples/customer.json
+        404:
+          description: Customer resource not found
+    put:
+      description: Update a Customer by id
+      body:
+        application/json:
+          schema: Customer
+          example: !include examples/customer.json
+      responses:
+        200:
+          body:
+            application/json:
+              schema: Customer
+              example: !include examples/customer.json
+        404:
+          description: Customer resource not found
+    delete:
+      description: Delete a Customer by id
+      responses:
+        204:
+          description: Customer successfully deleted
+        404:
+          description: Customer resource not found
